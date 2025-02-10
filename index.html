@@ -97,7 +97,7 @@
         let username = localStorage.getItem("username") || "Guest";
         let trees = {};
         let levels = {};
-        const treeStages = ["🌱", "🌿", "🌾", "🌳"];
+        const treeStages = ["🌱", "🌿", "🌾", "🌳", "💐"];
 
         function setUsername() {
             const input = document.getElementById("username").value.trim();
@@ -138,14 +138,16 @@
         }
 
         function waterTree(user) {
-            if (trees[user] < treeStages.length - 1) {
-                trees[user]++;
-                document.getElementById(`tree-${user}`).textContent = treeStages[trees[user]];
+            if (levels[user] < (treeStages.length * 3)  - 1) {
+                levels[user]++;
+                if (levels[user] % 3 == 0){
+                    trees[user]++;
+                    document.getElementById(`tree-${user}`).textContent = treeStages[trees[user]];
+                }
+                levels[user]++;
+                document.getElementById(`level-${user}`).textContent = `Level: ${levels[user]}`;
             }
-            levels[user]++;
-            document.getElementById(`level-${user}`).textContent = `Level: ${levels[user]}`;
         }
     </script>
 </body>
 </html>
-/home/marco/snap
