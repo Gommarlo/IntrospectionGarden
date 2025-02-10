@@ -21,22 +21,30 @@
             font-size: 1.2em;
             color: #388e3c;
         }
-        .username-container {
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin: 20px;
         }
-        .username-container input {
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        input, button {
             padding: 10px;
             font-size: 1em;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-        .username-container button {
-            padding: 10px;
-            border: none;
+        button {
             background-color: #4caf50;
             color: white;
             cursor: pointer;
-            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
         }
         .forest {
             display: flex;
@@ -47,7 +55,7 @@
         }
         .tree-container {
             width: 120px;
-            height: 180px;
+            height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -59,25 +67,9 @@
         .tree {
             font-size: 60px;
         }
-        .message-box {
-            width: 80%;
-            margin: 20px auto;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px;
-            border: none;
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
+        .level {
+            font-size: 1em;
+            color: #555;
         }
     </style>
 </head>
@@ -85,30 +77,33 @@
     <h1>The Garden of Introspection</h1>
     <p>Help others and watch your tree grow in this beautiful forest of introspection.</p>
     
-    <div class="username-container">
-        <input type="text" id="username" placeholder="Enter your username">
-        <button onclick="setUsername()">Save</button>
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Enter your username">
+            <button onclick="setUsername()">Save</button>
+        </div>
     </div>
     
     <div id="forest" class="forest"></div>
     
-    <div class="message-box">
+    <div class="container">
         <textarea id="message" rows="4" placeholder="Write something positive..."></textarea>
-        <br>
         <button onclick="postMessage()">Share</button>
     </div>
     
-    <ul id="messages" class="message-list"></ul>
+    <ul id="messages" class="container"></ul>
     
     <script>
-        let username = "Guest";
+        let username = localStorage.getItem("username") || "Guest";
         let trees = {};
+        let levels = {};
         const treeStages = ["🌱", "🌿", "🌾", "🌳"];
 
         function setUsername() {
             const input = document.getElementById("username").value.trim();
             if (input) {
                 username = input;
+                localStorage.setItem("username", username);
                 alert(`Username set to: ${username}`);
             }
         }
@@ -116,10 +111,15 @@
         function addUserTree(user) {
             if (!trees[user]) {
                 trees[user] = 0;
+                levels[user] = 0;
                 const forest = document.getElementById("forest");
                 const treeContainer = document.createElement("div");
                 treeContainer.classList.add("tree-container");
-                treeContainer.innerHTML = `<div class='tree' id='tree-${user}'>${treeStages[0]}</div><p>${user}</p>`;
+                treeContainer.innerHTML = `
+                    <div class='tree' id='tree-${user}'>${treeStages[0]}</div>
+                    <p>${user}</p>
+                    <p class='level' id='level-${user}'>Level: 0</p>
+                `;
                 forest.appendChild(treeContainer);
             }
         }
@@ -142,7 +142,10 @@
                 trees[user]++;
                 document.getElementById(`tree-${user}`).textContent = treeStages[trees[user]];
             }
+            levels[user]++;
+            document.getElementById(`level-${user}`).textContent = `Level: ${levels[user]}`;
         }
     </script>
 </body>
 </html>
+/home/marco/snap
