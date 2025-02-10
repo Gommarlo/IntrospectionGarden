@@ -134,16 +134,17 @@
         }
 
         function addUserTree(user) {
-            if (!trees[user]) {
-                trees[user] = 0;
-                levels[user] = 0;
+            if (!document.getElementById(`tree-container-${user}`)) {
+                trees[user] = trees[user] || 0;
+                levels[user] = levels[user] || 0;
                 const forest = document.getElementById("forest");
                 const treeContainer = document.createElement("div");
                 treeContainer.classList.add("tree-container");
+                treeContainer.id = `tree-container-${user}`;
                 treeContainer.innerHTML = `
-                    <div class='tree' id='tree-${user}'>${treeStages[0]}</div>
+                    <div class='tree' id='tree-${user}'>${treeStages[trees[user]]}</div>
                     <p>${user}</p>
-                    <p class='level' id='level-${user}'>Level: 0</p>
+                    <p class='level' id='level-${user}'>Level: ${levels[user]}</p>
                 `;
                 forest.appendChild(treeContainer);
             }
