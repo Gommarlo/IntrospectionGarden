@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Garden of Introspection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+        .garden {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .plant {
+            font-size: 50px;
+        }
+        .message-box {
+            width: 80%;
+            margin-top: 20px;
+        }
+        .message-list {
+            list-style: none;
+            padding: 0;
+        }
+        .message-list li {
+            background: white;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Garden of Introspection</h1>
+    <p>Share a message about mental health and support others to grow your plant!</p>
+    
+    <div class="garden">
+        <div id="plant" class="plant">🌱</div>
+        <p>Your plant grows when you help others!</p>
+    </div>
+    
+    <div class="message-box">
+        <textarea id="message" rows="4" placeholder="Write something positive..."></textarea>
+        <br>
+        <button onclick="postMessage()">Share</button>
+    </div>
+    
+    <ul id="messages" class="message-list"></ul>
+    
+    <script>
+        let plantStage = 0;
+        const plantStages = ["🌱", "🌿", "🌾", "🌳"];
+
+        function postMessage() {
+            const messageInput = document.getElementById("message");
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const messageList = document.getElementById("messages");
+                const newMessage = document.createElement("li");
+                newMessage.innerHTML = `${messageText} <br><button onclick='waterPlant()'>Helped</button>`;
+                messageList.appendChild(newMessage);
+                messageInput.value = "";
+            }
+        }
+
+        function waterPlant() {
+            if (plantStage < plantStages.length - 1) {
+                plantStage++;
+                document.getElementById("plant").textContent = plantStages[plantStage];
+            }
+        }
+    </script>
+</body>
+</html>
