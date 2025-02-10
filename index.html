@@ -1,117 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Garden of Introspection</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <style>
-        /* Your existing styles remain unchanged */
-    </style>
-</head>
-<body>
-    <h1>The Garden of Introspection</h1>
-    <p>Help others and watch your tree grow in this beautiful forest of introspection.</p>
-    
-    <div class="container">
-        <div class="input-group">
-            <input type="text" id="username" placeholder="Enter your username">
-            <button onclick="setUsername()">Save</button>
-        </div>
-    </div>
-    
-    <div id="forest" class="forest"></div>
-    
-    <div class="container">
-        <textarea id="message" rows="4" placeholder="Write something positive..."></textarea>
-        <button onclick="postMessage()">Share</button>
-    </div>
-    
-    <ul id="messages" class="container"></ul>
-    
-    <script>
-        const BIN_ID = "67aa03d1ad19ca34f8fe1222";
-        const API_KEY = "$2a$10$WDxqMldaCPRWe5QIkJyqaOoANokaYdmzbEnVOqet0yFLu7Fy/2Odm";
-        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+<script>
+    const BIN_ID = "67aa03d1ad19ca34f8fe1222";
+    const API_KEY = "$2a$10$WDxqMldaCPRWe5QIkJyqaOoANokaYdmzbEnVOqet0yFLu7Fy/2Odm";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-        async function fetchData() {
-            try {
-                const response = await axios.get(API_URL, { headers: { "X-Master-Key": API_KEY } });
-                const data = response.data.record;
-
-                // Ensure messages exist before rendering
-                if (!data.messages) {
-                    data.messages = []; // Initialize if not present
-                }
-
-                renderForest(data.trees);
-                renderMessages(data.messages);
-            } catch (error) {
-                console.error("Error fetching data", error);
-            }
-        }
-
-        async function saveData(data) {
-            try {
-                await axios.put(API_URL, data, { headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY } });
-            } catch (error) {
-                console.error("Error saving data", error);
-            }
-        }
-
-        function renderForest(trees) {
-            const forest = document.getElementById("forest");
-            forest.innerHTML = "";
-            for (const user in trees) {
-                const treeContainer = document.createElement("div");
-                treeContainer.classList.add("tree-container");
-                treeContainer.innerHTML = `
-                    <div class='tree'>${trees[user]}</div>
-                    <p>${user}</p>
-                `;
-                forest.appendChild(treeContainer);
-            }
-        }
-
-        function renderMessages(messages) {
-            const messageList = document.getElementById("messages");
-            messageList.innerHTML = "";
-            messages.forEach(msg => {
-                const newMessage = document.createElement("li");
-                newMessage.textContent = msg;
-                messageList.appendChild(newMessage);
-            });
-        }
-
-        async function postMessage() {
-            const messageInput = document.getElementById("message");
-            const messageText = messageInput.value.trim();
-            if (!messageText) return;
-            
+    async function fetchData() {
+        try {
             const response = await axios.get(API_URL, { headers: { "X-Master-Key": API_KEY } });
             const data = response.data.record;
-            
-            data.messages.push(messageText);
-            await saveData(data);
-            fetchData();
-            messageInput.value = "";
-        }
 
-        // Define the setUsername function
-        function setUsername() {
-            const usernameInput = document.getElementById("username");
-            const username = usernameInput.value.trim();
-            if (username) {
-                // Save the username (here we just show an alert, but you can store it in your backend or local storage)
-                alert(`Username saved: ${username}`);
-                usernameInput.value = ""; // Clear input field
-            } else {
-                alert("Please enter a valid username.");
+            // Ensure messages exist before rendering
+            if (!data.messages) {
+                data.messages = []; // Initialize if not present
             }
+
+            renderForest(data.trees);
+            renderMessages(data.messages);
+        } catch (error) {
+            console.error("Error fetching data", error);
+        }
+    }
+
+    async function saveData(data) {
+        try {
+            await axios.put(API_URL, data, { headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY } });
+        } catch (error) {
+            console.error("Error saving data", error);
+        }
+    }
+
+    function renderForest(trees) {
+        const forest = document.getElementById("forest");
+        forest.innerHTML = "";
+        for (const user in trees) {
+            const treeContainer = document.createElement("div");
+            treeContainer.classList.add("tree-container");
+            treeContainer.innerHTML = `
+                <div class='tree'>${trees[user]}</div>
+                <p>${user}</p>
+            `;
+            forest.appendChild(treeContainer);
+        }
+    }
+
+    function renderMessages(messages) {
+        const messageList = document.getElementById("messages");
+        messageList.innerHTML = "";
+        messages.forEach(msg => {
+            const newMessage = document.createElement("li");
+            newMessage.textContent = msg;
+            messageList.appendChild(newMessage);
+        });
+    }
+
+    async function postMessage() {
+        const messageInput = document.getElementById("message");
+        const messageText = messageInput.value.trim();
+        if (!messageText) return;
+
+        const response = await axios.get(API_URL, { headers: { "X-Master-Key": API_KEY } });
+        const data = response.data.record;
+
+        // Ensure messages exist before pushing
+        if (!data.messages) {
+            data.messages = []; // Initialize if not present
         }
 
+        data.messages.push(messageText);
+        await saveData(data);
         fetchData();
-    </script>
-</body>
-</html>
+        messageInput.value = "";
+    }
+
+    // Define the setUsername function
+    function setUsername() {
+        const usernameInput = document.getElementById("username");
+        const username = usernameInput.value.trim();
+        if (username) {
+            // Save the username (here we just show an alert, but you can store it in your backend or local storage)
+            alert(`Username saved: ${username}`);
+            usernameInput.value = ""; // Clear input field
+        } else {
+            alert("Please enter a valid username.");
+        }
+    }
+
+    fetchData();
+</script>
