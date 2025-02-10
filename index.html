@@ -8,30 +8,37 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f0f8ff;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
         }
-        .garden {
+        .forest {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            gap: 20px;
+        }
+        .tree-container {
+            width: 100px;
+            height: 150px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .plant {
+        .tree {
             font-size: 50px;
         }
         .message-box {
             width: 80%;
-            margin-top: 20px;
-        }
-        .message-list {
-            list-style: none;
-            padding: 0;
-        }
-        .message-list li {
+            margin: 20px auto;
             background: white;
-            margin: 10px;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         button {
@@ -50,12 +57,9 @@
 </head>
 <body>
     <h1>The Garden of Introspection</h1>
-    <p>Share a message about mental health and support others to grow your plant!</p>
+    <p>Help others and watch your tree grow in this beautiful forest of introspection.</p>
     
-    <div class="garden">
-        <div id="plant" class="plant">🌱</div>
-        <p>Your plant grows when you help others!</p>
-    </div>
+    <div id="forest" class="forest"></div>
     
     <div class="message-box">
         <textarea id="message" rows="4" placeholder="Write something positive..."></textarea>
@@ -66,25 +70,38 @@
     <ul id="messages" class="message-list"></ul>
     
     <script>
-        let plantStage = 0;
-        const plantStages = ["🌱", "🌿", "🌾", "🌳"];
+        let trees = {};
+        const treeStages = ["🌱", "🌿", "🌾", "🌳"];
+
+        function addUserTree(user) {
+            if (!trees[user]) {
+                trees[user] = 0;
+                const forest = document.getElementById("forest");
+                const treeContainer = document.createElement("div");
+                treeContainer.classList.add("tree-container");
+                treeContainer.innerHTML = `<div class='tree' id='tree-${user}'>${treeStages[0]}</div><p>${user}</p>`;
+                forest.appendChild(treeContainer);
+            }
+        }
 
         function postMessage() {
             const messageInput = document.getElementById("message");
             const messageText = messageInput.value.trim();
             if (messageText) {
+                const user = "User" + (Object.keys(trees).length + 1);
+                addUserTree(user);
                 const messageList = document.getElementById("messages");
                 const newMessage = document.createElement("li");
-                newMessage.innerHTML = `${messageText} <br><button onclick='waterPlant()'>Helped</button>`;
+                newMessage.innerHTML = `${messageText} <br><button onclick='waterTree("${user}")'>Helped</button>`;
                 messageList.appendChild(newMessage);
                 messageInput.value = "";
             }
         }
 
-        function waterPlant() {
-            if (plantStage < plantStages.length - 1) {
-                plantStage++;
-                document.getElementById("plant").textContent = plantStages[plantStage];
+        function waterTree(user) {
+            if (trees[user] < treeStages.length - 1) {
+                trees[user]++;
+                document.getElementById(`tree-${user}`).textContent = treeStages[trees[user]];
             }
         }
     </script>
