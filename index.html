@@ -98,11 +98,12 @@
             messageInput.value = "";
         }
 
+        // Define the setUsername function
         function setUsername() {
             const usernameInput = document.getElementById("username");
             const username = usernameInput.value.trim();
             if (username) {
-                // You can add logic to save this username in your backend or locally
+                // Save the username (here we just show an alert, but you can store it in your backend or local storage)
                 alert(`Username saved: ${username}`);
                 usernameInput.value = ""; // Clear input field
             } else {
