@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Garden of Introspection</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -103,59 +104,68 @@
     <ul id="messages" class="container"></ul>
     
     <script>
-        let username = localStorage.getItem("username") || "Guest";
-        let trees = {};
-        let levels = {};
-        const treeStages = ["🌱", "🌿", "🌾", "🌳", "💐"];
+        const BIN_ID = "67aa03d1ad19ca34f8fe1222";
+        const API_KEY = "$2a$10$WDxqMldaCPRWe5QIkJyqaOoANokaYdmzbEnVOqet0yFLu7Fy/2Odm";
+        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-        function setUsername() {
-            const input = document.getElementById("username").value.trim();
-            if (input) {
-                username = input;
-                localStorage.setItem("username", username);
-                alert(`Username set to: ${username}`);
+        async function fetchData() {
+            try {
+                const response = await axios.get(API_URL, { headers: { "X-Master-Key": API_KEY } });
+                const data = response.data.record;
+                renderForest(data.trees);
+                renderMessages(data.messages);
+            } catch (error) {
+                console.error("Error fetching data", error);
             }
         }
 
-        function addUserTree(user) {
-            if (!trees[user]) {
-                trees[user] = 0;
-                levels[user] = 0;
-                const forest = document.getElementById("forest");
+        async function saveData(data) {
+            try {
+                await axios.put(API_URL, data, { headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY } });
+            } catch (error) {
+                console.error("Error saving data", error);
+            }
+        }
+
+        function renderForest(trees) {
+            const forest = document.getElementById("forest");
+            forest.innerHTML = "";
+            for (const user in trees) {
                 const treeContainer = document.createElement("div");
                 treeContainer.classList.add("tree-container");
                 treeContainer.innerHTML = `
-                    <div class='tree' id='tree-${user}'>${treeStages[0]}</div>
+                    <div class='tree'>${trees[user]}</div>
                     <p>${user}</p>
-                    <p class='level' id='level-${user}'>Level: 0</p>
                 `;
                 forest.appendChild(treeContainer);
             }
         }
 
-        function postMessage() {
-            const messageInput = document.getElementById("message");
-            const messageText = messageInput.value.trim();
-            if (messageText) {
-                addUserTree(username);
-                const messageList = document.getElementById("messages");
+        function renderMessages(messages) {
+            const messageList = document.getElementById("messages");
+            messageList.innerHTML = "";
+            messages.forEach(msg => {
                 const newMessage = document.createElement("li");
-                newMessage.innerHTML = `${messageText} <br><button onclick='waterTree("${username}")'>Helped</button>`;
+                newMessage.textContent = msg;
                 messageList.appendChild(newMessage);
-                messageInput.value = "";
-            }
+            });
         }
 
-        function waterTree(user) {
-            if (levels[user] < (treeStages.length * 3) - 1) {
-                levels[user]++;
-                if (levels[user] % 3 == 0) {
-                    trees[user]++;
-                    document.getElementById(`tree-${user}`).textContent = treeStages[trees[user]];
-                }
-                document.getElementById(`level-${user}`).textContent = `Level: ${levels[user]}`;
-            }
+        async function postMessage() {
+            const messageInput = document.getElementById("message");
+            const messageText = messageInput.value.trim();
+            if (!messageText) return;
+            
+            const response = await axios.get(API_URL, { headers: { "X-Master-Key": API_KEY } });
+            const data = response.data.record;
+            
+            data.messages.push(messageText);
+            await saveData(data);
+            fetchData();
+            messageInput.value = "";
         }
+
+        fetchData();
     </script>
 </body>
 </html>
